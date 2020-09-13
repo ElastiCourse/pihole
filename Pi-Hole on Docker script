@@ -1,0 +1,42 @@
+#=========================================
+#Step 1. Install Docker on Ubuntu 20.04
+#=========================================
+sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo apt-get update
+sudo apt-get install     apt-transport-https     ca-certificates     curl     gnupg-agent     software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) \
+stable"
+sudo apt-get update && sudo apt-get install docker-ce docker-ce-cli containerd.io
+docker --version
+#=========================================
+#Step 2. Disable Ubuntu DNS service
+#=========================================
+sudo systemctl stop systemd-resolved.service 
+sudo systemctl disable systemd-resolved.service 
+sudo nano /etc/resolv.conf 
+ping yahoo.com
+#=========================================
+#Step 3. Configure and run Pi-Hole container on Docker
+#=========================================
+wget https://raw.githubusercontent.com/pi-hole/docker-pi-hole/master/docker_run.sh
+sudo nano docker_run.sh
+sudo chmod +x docker_run.sh 
+sudo ./docker_run.sh
+sudo nano /etc/resolv.conf 
+#=========================================
+#On Windows - Using custom ports
+#=========================================
+docker run -d --name pihole -e ServerIP=172.20.0.20 -e WEBPASSWORD=GUIpassWORD -e DNS1=127.0.0.1 -e DNS2=1.1.1.1 -e DNS3=9.9.9.9 -p 8080:80 -p 53:53/tcp -p 53:53/udp -p 443:443 --restart=unless-stopped pihole/pihole:latest
+#=========================================
+#On Windows - Using default ports
+#=========================================
+docker run -d --name pihole -e ServerIP=172.20.0.20 -e WEBPASSWORD=GUIpassWORD -e DNS1=127.0.0.1 -e DNS2=1.1.1.1 -e DNS3=9.9.9.9 -p 80:80 -p 53:53/tcp -p 53:53/udp -p 443:443 --restart=unless-stopped pihole/pihole:latest
+#=========================================
+#On Windows - Enable WSL2
+#=========================================
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+== Restart ==
+wsl --set-default-version 2
