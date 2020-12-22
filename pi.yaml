@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  cloudflared:
+    container_name: cloudflared
+    image: visibilityspots/cloudflared:amd64
+    restart: unless-stopped
+    networks:
+      pihole_net:
+        ipv4_address: 10.0.0.2
+
+  pi-hole:
+    container_name: pi-hole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80/tcp"
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - pihole:/etc/pihole
+      - dnsmasq:/etc/dnsmasq.d
+    environment:
+      - ServerIP=10.0.0.3
+      - DNS1='10.0.0.2#5054'
+      - DNS2=''
+      - IPv6=false
+      - TZ=CEST-2
+      - DNSMASQ_LISTENING=all
+      - WEBPASSWORD=admin
+    networks:
+      pihole_net:
+        ipv4_address: 10.0.0.3
+    dns:
+      - 127.0.0.1
+
+networks:
+  pihole_net:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.0.0.0/29
+volumes:
+    pihole:
+    dnsmasq:
