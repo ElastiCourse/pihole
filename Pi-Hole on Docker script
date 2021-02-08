@@ -11,11 +11,18 @@ stable"
 sudo apt-get update && sudo apt-get install docker-ce docker-ce-cli containerd.io
 docker --version
 #=========================================
-#Step 2. Disable Ubuntu DNS service
+#Step 2. Disable Ubuntu DNS service (NOT NEEDED for Ubuntu on Windows WSL, which has no systemd)
 #=========================================
 sudo systemctl stop systemd-resolved.service 
 sudo systemctl disable systemd-resolved.service 
+### Update 2-8-2021: Remove symbolic link for resolv.conf first then recreate to avoid future overrides)
+sudo rm /etc/resolv.conf
 sudo nano /etc/resolv.conf 
+----
+#paste following two lines in the new resolv.conf, change 172.20.0.20 to Pi-Hole host IP, if local use 127.0.0.1, if remote use the remote host IP like my case
+nameserver 172.20.0.20
+options edns0
+----
 ping yahoo.com
 #=========================================
 #Step 3. Configure and run Pi-Hole container on Docker
