@@ -22,7 +22,7 @@ services:
       - dnsmasq:/etc/dnsmasq.d
     environment:
       - ServerIP=10.0.0.3
-      - DNS1='10.0.0.2#5054'
+      - DNS1=10.0.0.2#5054
       - DNS2=''
       - IPv6=false
       - TZ=CEST-2
